@@ -4,14 +4,13 @@
 
 # Try to ping .1 thru .254
 for i in $(seq 1 254); do
-
-  ping -c 4 -i 0.2 -W 1 $1.$i > /dev/null
-  # don't print ping output to STDOUT
-  # successful ping has return code of 0
-  rc=$? # store the return code
-  if [[ $rc -eq 0 ]] ; then
-    # echo IP of hosts that respond
-    echo $1.$i;
-  fi
-  
+  # Output sent to nowhere (/dev/null)
+  # If ping ran successfully, the corresponding IP is echoed
+  # Both of these are run in background
+  # So that the loop could quickly move on without waiting for
+  #  current iteration to complete
+  ping -c 4 -i 0.2 -W 1 $1.$i > /dev/null && echo $1.$i &
 done
+
+# Wait for all those jobs in background to complete
+wait
